@@ -2,17 +2,13 @@
 import xlsxwriter, os, sys
 from glob import glob
 from datetime import datetime
+# from os.path import normpath
 
-path = "G:\\codes\\scripts\\"
-image_folder = path +"images"
-
-def main(input_path, filename_split_keyword):
-    # filename_split_keyword "\\"
-    # print(" : ", input_path.split(filename_split_keyword)[-1])
-    xlsx_path = "output\\"+  input_path.split(filename_split_keyword)[-1] + ".xlsx"
-
-    # print("xlsx_path : ", xlsx_path)
-
+def main(input_path):
+    if not os.path.exists("output/"):
+        os.mkdir("output/")
+        
+    xlsx_path = "output\\"+  input_path.split("\\")[-1] + ".xlsx"
     if os.path.exists(xlsx_path):
         os.remove(xlsx_path)
         print("Removing old XLSX file...")
@@ -21,6 +17,7 @@ def main(input_path, filename_split_keyword):
     workbook = xlsxwriter.Workbook(xlsx_path)
     worksheet = workbook.add_worksheet()
 
+    # write column names on line 1
     workbook_index = 1
 
     # defining column names at index 1
@@ -30,12 +27,9 @@ def main(input_path, filename_split_keyword):
     
     workbook_index += 1
 
-    print(" : ", filename_split_keyword, xlsx_path)
-    # exit()
-
+    # resize image to paste in xlsx
     image_width = 140.0
     image_height = 182.0
-
     cell_width = 20.0
     cell_height = 15.0
 
@@ -43,10 +37,7 @@ def main(input_path, filename_split_keyword):
     y_scale = cell_height/image_height
 
     for index, image_path in enumerate(glob(input_path+"/*")):
-        print("index : ", index)
-
-        filename = image_path.split(filename_split_keyword)[-1][:-4] #.replace("\\","_")[:-4]
-        print(image_path, image_path.split(filename_split_keyword), "filename : ", filename)
+        filename = image_path.split("\\")[-1][:-4]
 
         # column one
         worksheet.write('A'+str(workbook_index), "text 1 column 1")
@@ -57,12 +48,13 @@ def main(input_path, filename_split_keyword):
         # column three
         worksheet.insert_image('C'+str(workbook_index), image_path, {'x_scale': x_scale, 'y_scale': y_scale})
         
-        # next line or more than that
+        # set next line or column number
         workbook_index+=6
 
     workbook.close()
 
-
+# path to images folder
 input_ = "G:\\codes\\scripts\\images"
-filename_split_keyword="scripts\\"
-main(input_, filename_split_keyword)
+# output will be saved in output folder
+main(input_)
+
